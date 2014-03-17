@@ -1,1 +1,85 @@
-finally
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp"%>
+<!-- Function to open legacy image viewing -->
+<script>
+	function callDocView(jobId) {
+	    // set width = screen width, height = relative to width
+	    var x=screen.availWidth-5;
+	    var y=x*Math.SQRT2;
+	    
+	    // if height > screen height, set height = screen height, width = relative to height
+	    // width will never be > screen width
+	    if(y>screen.availHeight-5) {
+	        y=screen.availHeight-5;
+	        x=y/Math.SQRT2;
+	    }
+	    
+	    window.open('/JGNS017/viewJob.htm?jobId=' + jobId,
+	            'view_window' + jobId,
+	            'resizable=yes,toolbar=no,location=no,directories=no,status=yes,personalbar=no;menubar=no,'+
+	            'width='+x+',height='+y+',left=0,top=0');
+	    
+	    return false;
+	}
+</script>
+<div class="area_form_input">
+	<fieldset>
+		<table width="100%" border="0">
+			<tr>
+				<td width="30%"><b><fmt:message key="ewfHeader.label.jobId" /></b>${headerFooterForm.jobId}</td>
+				<td><b><fmt:message key="ewfHeader.label.sentBy" /></b>${headerFooterForm.ewfDetail.workflowJobDetails.senderName}</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><table width="100%" border="0">
+						<c:forEach
+							items="${headerFooterForm.ewfDetail.workflowJobDetails.jobSubjects}"
+							var="subject">
+							<c:choose>
+								<c:when test="${subject.subjectTypeCode eq 'Y'}">
+									<c:set var="subjectType" value="People" />
+								</c:when>
+								<c:when test="${subject.subjectTypeCode eq 'N'}">
+									<c:set var="subjectType" value="Animal" />
+								</c:when>
+							</c:choose>
+							<tr>
+								<td><b><fmt:message key="ewfHeader.label.subject" /></b> <c:out
+										value="${subjectType}" />&nbsp;-&nbsp;${subject.subjectName}</td>
+							</tr>
+						</c:forEach>
+					</table></td>
+			</tr>
+		</table>
+	</fieldset>
+	<c:if test="${not empty headerFooterForm.ewfDetail.workflowAudit}">
+		<fieldset>
+			<table width="50%" border="0">
+				<c:forEach items="${headerFooterForm.ewfDetail.workflowAudit}"
+					var="auditDtl" varStatus="index">
+					<tr>
+						<td><c:if test="${index.index eq 0}">
+								<b><fmt:message key="ewfHeader.label.history" /></b>
+							</c:if></td>
+						<td><c:out value="${auditDtl.createDate}" /></td>
+						<td><c:out value="${auditDtl.createTime}" /></td>
+						<td><c:out value="${auditDtl.moduleName}" /></td>
+						<td><c:out value="${auditDtl.activityName}" /></td>
+						<td><c:out value="${auditDtl.auditType}" /></td>
+					</tr>
+				</c:forEach>
+			</table>
+		</fieldset>
+	</c:if>
+	<c:if test="${not empty headerFooterForm.ewfDetail.document}">
+		<fieldset>
+			<div align="right" style="padding: 5px;">
+			    <!-- Call to legacy image viewing the same as the work queue -->
+			    <a href="#" onclick="callDocView(${headerFooterForm.jobId});" title="View Documents">
+                    <img width="15" height="20" border="0" src="/JRCD001/images/document_icon_thumb.gif">
+                </a>
+			</div>
+		</fieldset>
+	</c:if>
+</div>
+<!-- End of area_form_input -->
+<div style="height: 5px"></div>
